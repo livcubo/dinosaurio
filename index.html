@@ -36,9 +36,9 @@ var lives = 3;
 var livesText;
 var isInvulnerable = false;
 var gameOverText;
-var restartButton;      // Botón 1: Reintentar Nivel
-var startOverButton;    // Botón 2: Empezar de Cero (Nuevo)
-var menuButton;         // Botón 3: Menú Principal
+var restartButton;      
+var startOverButton;    
+var menuButton;         
 var jumpCount = 0;
 const MAX_JUMPS = 2;
 var currentLevelIndex = 0;
@@ -103,7 +103,7 @@ const LEVEL_DATA = [
     }
 ];
 
-// --- Estilos de Texto Personalizados ---
+// --- Estilos de Texto Personalizados (Sin Cambios) ---
 const TITLE_FONT = 'PressStart2P';
 const GAME_TEXT_FONT = 'Arial'; 
 
@@ -111,66 +111,34 @@ const textStyleGame = { fontSize: '32px', fill: '#FFFFFF', stroke: '#000000', st
 const levelTextStyle = { fontSize: '32px', fill: '#FFD700', stroke: '#000000', strokeThickness: 6, fontFamily: GAME_TEXT_FONT };
 
 
-// --- SCENE: Menu Principal ---
-
+// --- SCENE: Menu Principal (Sin Cambios) ---
 class MenuScene extends Phaser.Scene {
     constructor() {
         super('menuScene');
         this.highScore = 0; 
     }
-
     preload() {
         this.load.image('sky', 'ol.png');
         this.load.image('ground', 'platt.png');
     }
-
     create() {
         this.add.image(400, 300, 'sky').setAlpha(0.8);
         this.add.image(400, 568, 'ground').setScale(2).setAlpha(0.6);
-
-        // **NOTA: Cambiar la clave de localStorage a 'dinoCuboHighScore'**
         this.highScore = localStorage.getItem('dinoCuboHighScore') || 0;
-
-        // --- Título del Juego (Dino-Cubo) ---
         this.add.text(400, 100, 'DINO-CUBO', {
-            fontSize: '64px', 
-            fill: '#00FF00', // Verde Dino
-            fontFamily: TITLE_FONT,
-            stroke: '#FF4500', 
-            strokeThickness: 8,
-            shadow: { offsetX: 3, offsetY: 3, color: '#000', blur: 5, fill: true }
+            fontSize: '64px', fill: '#00FF00', fontFamily: TITLE_FONT, stroke: '#FF4500', strokeThickness: 8, shadow: { offsetX: 3, offsetY: 3, color: '#000', blur: 5, fill: true }
         }).setOrigin(0.5);
-
         this.add.text(400, 200, 'Aventura de Plataformas', {
-            fontSize: '32px',
-            fill: '#FFFFFF', 
-            fontFamily: GAME_TEXT_FONT,
-            stroke: '#000',
-            strokeThickness: 4
+            fontSize: '32px', fill: '#FFFFFF', fontFamily: GAME_TEXT_FONT, stroke: '#000', strokeThickness: 4
         }).setOrigin(0.5);
-
-        // --- Puntuación Más Alta ---
         this.add.text(400, 300, 'Record: ' + this.highScore, {
-            fontSize: '32px',
-            fill: '#FFD700',
-            fontFamily: GAME_TEXT_FONT,
-            stroke: '#000',
-            strokeThickness: 4
+            fontSize: '32px', fill: '#FFD700', fontFamily: GAME_TEXT_FONT, stroke: '#000', strokeThickness: 4
         }).setOrigin(0.5);
-
-        // --- Botón: Jugar (Ir a Selección de Nivel) ---
         const playButton = this.add.text(400, 450, 'SELECCIÓN DE NIVEL', {
-            fontSize: '36px',
-            fill: '#000',
-            backgroundColor: '#FFD700', 
-            padding: { x: 30, y: 15 },
-            borderRadius: 10,
-            fontFamily: GAME_TEXT_FONT
+            fontSize: '36px', fill: '#000', backgroundColor: '#FFD700', padding: { x: 30, y: 15 }, borderRadius: 10, fontFamily: GAME_TEXT_FONT
         })
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true });
-
-        // Efectos del botón
         playButton.on('pointerover', () => { playButton.setScale(1.05).setBackgroundColor('#FFFF00'); });
         playButton.on('pointerout', () => { playButton.setScale(1.0).setBackgroundColor('#FFD700'); });
         playButton.on('pointerdown', () => {
@@ -179,105 +147,57 @@ class MenuScene extends Phaser.Scene {
     }
 }
 
-// --- SCENE: Selección de Nivel ---
-
+// --- SCENE: Selección de Nivel (Sin Cambios) ---
 class LevelSelectScene extends Phaser.Scene {
-    constructor() {
-        super('levelSelectScene');
-    }
-
+    constructor() { super('levelSelectScene'); }
     create() {
         this.add.image(400, 300, 'sky').setAlpha(0.9);
         this.add.image(400, 568, 'ground').setScale(2).setAlpha(0.6);
-
         this.add.text(400, 60, 'Elige tu Nivel de 1 a 10', {
-            fontSize: '48px',
-            fill: '#FF6347', 
-            fontFamily: TITLE_FONT,
-            stroke: '#000',
-            strokeThickness: 6
+            fontSize: '48px', fill: '#FF6347', fontFamily: TITLE_FONT, stroke: '#000', strokeThickness: 6
         }).setOrigin(0.5);
-
-        const buttonStyle = {
-            fontSize: '20px',
-            fill: '#FFFFFF',
-            backgroundColor: '#4682B4', 
-            padding: { x: 15, y: 10 },
-            borderRadius: 5,
-            fontFamily: GAME_TEXT_FONT
-        };
-
-        const hoverTint = 0x87CEFA; 
-
+        const buttonStyle = { fontSize: '20px', fill: '#FFFFFF', backgroundColor: '#4682B4', padding: { x: 15, y: 10 }, borderRadius: 5, fontFamily: GAME_TEXT_FONT };
         const numLevels = LEVEL_DATA.length;
         const cols = 5;
         const startX = 100;
         const startY = 180;
         const paddingX = 150;
         const paddingY = 80;
-
         for (let i = 0; i < numLevels; i++) {
             const levelNum = i + 1;
             const row = Math.floor(i / cols);
             const col = i % cols;
-
             const x = startX + col * paddingX;
             const y = startY + row * paddingY;
-
             const button = this.add.text(x, y, `Nivel ${levelNum}`, buttonStyle)
-                .setOrigin(0.5)
-                .setInteractive({ useHandCursor: true });
-
-            button.on('pointerover', () => { button.setTint(hoverTint); });
+                .setOrigin(0.5).setInteractive({ useHandCursor: true });
+            button.on('pointerover', () => { button.setTint(0x87CEFA); });
             button.on('pointerout', () => { button.clearTint(); });
             button.on('pointerdown', () => this.startGame(i)); 
         }
-
         const backButton = this.add.text(400, 550, 'Volver al Menú Principal', {
-            fontSize: '30px', fill: '#FFFFFF', backgroundColor: '#808080', 
-            padding: { x: 20, y: 10 }, borderRadius: 5, fontFamily: GAME_TEXT_FONT
+            fontSize: '30px', fill: '#FFFFFF', backgroundColor: '#808080', padding: { x: 20, y: 10 }, borderRadius: 5, fontFamily: GAME_TEXT_FONT
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-        
         backButton.on('pointerdown', () => this.scene.start('menuScene'));
     }
-
     startGame(levelIndex) {
-        score = 0;
-        lives = 3;
-        currentLevelIndex = levelIndex; 
-        this.scene.start('gameScene');
+        score = 0; lives = 3; currentLevelIndex = levelIndex; this.scene.start('gameScene');
     }
 }
 
 
-// --- SCENE: Juego Principal ---
-
+// --- SCENE: Juego Principal (Sin Cambios) ---
 class GameScene extends Phaser.Scene {
-    constructor() {
-        super('gameScene');
-    }
-    
+    constructor() { super('gameScene'); }
     preload() {
-        // ... (Archivos cargados)
-        this.load.image('sky','ol.png');
-        this.load.image('ground', 'platt.png');
-        this.load.image('star', 'jo.png');
-        this.load.image('bomb', 'met.png');
+        this.load.image('sky','ol.png'); this.load.image('ground', 'platt.png');
+        this.load.image('star', 'jo.png'); this.load.image('bomb', 'met.png');
         this.load.spritesheet('dude', 'cuboo.png',{ frameWidth: 279, frameHeight: 230 });
-        this.load.image('drone', 'LOC.png');
-        this.load.image('flower', 'flor.png'); 
+        this.load.image('drone', 'LOC.png'); this.load.image('flower', 'flor.png'); 
         this.load.image('es', 'es.png'); 
     }
-
-    create() {
-        gameCreate.call(this);
-    }
-
-    update(time, delta) {
-        gameUpdate.call(this, time, delta);
-    }
-
-    // Funciones de Lógica que usan 'this'
+    create() { gameCreate.call(this); }
+    update(time, delta) { gameUpdate.call(this, time, delta); }
     collectStar(player, star) { collectStar.call(this, player, star); }
     collectFlower(player, flower) { collectFlower.call(this, player, flower); }
     collectShield(player, shield) { collectShield.call(this, player, shield); }
@@ -285,10 +205,10 @@ class GameScene extends Phaser.Scene {
     hitBombNew(player, enemy) { hitBombNew.call(this, player, enemy); }
     loadLevel(levelIndex) { loadLevel.call(this, levelIndex); }
     restartCurrentLevel() { restartCurrentLevel.call(this); } 
-    startFromLevelOne() { startFromLevelOne.call(this); } // Nueva función
+    startFromLevelOne() { startFromLevelOne.call(this); }
 }
 
-// --- Configuración del Juego ---
+// --- Configuración del Juego (Sin Cambios) ---
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -306,14 +226,13 @@ var config = {
 var game = new Phaser.Game(config);
 
 
-// --- Funciones Auxiliares (Lógica de Juego) ---
+// --- Funciones Auxiliares (Lógica de Juego - Sin Cambios mayores en gameCreate/Update/Hit/Restart) ---
 
 function gameCreate () 
 {
     gameOver = false;
     isInvulnerable = false;
     jumpCount = 0;
-
     this.add.image(400, 300, 'sky');
 
     // Inicialización de grupos (Grupos de física)
@@ -322,14 +241,15 @@ function gameCreate ()
     stars = this.physics.add.group();
     bombs = this.physics.add.group();
     drones = this.physics.add.group({ allowGravity: false });
-    extraLives = this.physics.add.group();
-    shields = this.physics.add.group(); 
+    // IMPORTANT: Los grupos 'extraLives' y 'shields' ahora se inicializan sin gravedad
+    // La lógica de asignación a plataformas fijas se hace en loadLevel.
+    extraLives = this.physics.add.staticGroup(); 
+    shields = this.physics.add.staticGroup(); 
 
     player = this.physics.add.sprite(100, 450, 'dude').setScale(0.3);
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
-    // Animaciones
     this.anims.create({ key: 'left', frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 1 }), frameRate: 10, repeat: -1 });
     this.anims.create({ key: 'turn', frames: [ { key: 'dude', frame: 4 } ], frameRate: 20 });
     this.anims.create({ key: 'right', frames: this.anims.generateFrameNumbers('dude', { start: 3, end: 4 }), frameRate: 10, repeat: -1 });
@@ -340,29 +260,21 @@ function gameCreate ()
     livesText = this.add.text(16, 50, 'Vidas: ' + lives, textStyleGame);
     levelText = this.add.text(784, 16, '', levelTextStyle).setOrigin(1, 0);
 
-    // Texto de GAME OVER/COMPLETADO 
+    // ... (Inicialización de Textos y Botones de Game Over/Restart) ...
     gameOverText = this.add.text(400, 150, 'GAME OVER', { 
         fontSize: '48px', fill: '#FFFF00', stroke: '#000000', strokeThickness: 8, fontFamily: TITLE_FONT
     }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
-
-    // Botón 1: Reintentar Nivel
     restartButton = this.add.text(400, 300, 'Reintentar Nivel', { 
-        fontSize: '28px', fill: '#FFFFFF', backgroundColor: '#DC143C', 
-        padding: { x: 20, y: 10 }, borderRadius: 5, fontFamily: GAME_TEXT_FONT
+        fontSize: '28px', fill: '#FFFFFF', backgroundColor: '#DC143C', padding: { x: 20, y: 10 }, borderRadius: 5, fontFamily: GAME_TEXT_FONT
     }).setOrigin(0.5).setInteractive().on('pointerdown', this.restartCurrentLevel, this).setVisible(false);
-    
-    // Botón 2: Empezar de Cero (NUEVO)
     startOverButton = this.add.text(400, 380, 'Empezar de Cero (Nivel 1)', { 
-        fontSize: '28px', fill: '#000000', backgroundColor: '#00FF7F', // Verde claro
+        fontSize: '28px', fill: '#000000', backgroundColor: '#00FF7F', 
         padding: { x: 20, y: 10 }, borderRadius: 5, fontFamily: GAME_TEXT_FONT
     }).setOrigin(0.5).setInteractive().on('pointerdown', this.startFromLevelOne, this).setVisible(false);
-
-    // Botón 3: Menú Principal
     menuButton = this.add.text(400, 460, 'Selección de Nivel', { 
         fontSize: '28px', fill: '#FFFFFF', backgroundColor: '#1E90FF', 
         padding: { x: 20, y: 10 }, borderRadius: 5, fontFamily: GAME_TEXT_FONT
     }).setOrigin(0.5).setInteractive().on('pointerdown', () => this.scene.start('levelSelectScene'), this).setVisible(false);
-
 
     // Conexiones de física
     this.physics.add.collider(player, platforms);
@@ -373,10 +285,9 @@ function gameCreate ()
     this.physics.add.collider(bombs, movingPlatforms); 
     this.physics.add.collider(drones, platforms);
     this.physics.add.collider(drones, movingPlatforms); 
-    this.physics.add.collider(extraLives, platforms);
-    this.physics.add.collider(extraLives, movingPlatforms); 
-    this.physics.add.collider(shields, platforms); 
-    this.physics.add.collider(shields, movingPlatforms); 
+    
+    // NOTA: Se eliminan las colisiones de extraLives/shields con platforms/movingPlatforms 
+    // porque ahora son estáticos y deberían flotar donde se colocan.
 
     this.physics.add.overlap(player, stars, this.collectStar, null, this);
     this.physics.add.overlap(player, extraLives, this.collectFlower, null, this);
@@ -401,256 +312,75 @@ function gameUpdate (time, delta)
         jumpCount++;
     }
 
-    // Rotación estética
+    // Rotación estética para todos, incluyendo los ítems estáticos
     stars.children.iterate(function (child) { child.angle += 3; });
     bombs.children.iterate(function (child) { child.angle += 5; });
-    extraLives.children.iterate(function (child) { child.angle -= 2; });
-    shields.children.iterate(function (child) { child.angle += 4; }); 
+    extraLives.children.iterate(function (child) { child.angle -= 2; }); // La rotación se mantiene
+    shields.children.iterate(function (child) { child.angle += 4; }); // La rotación se mantiene
     drones.children.iterate(function (drone) {
         drone.angle = 5 * Math.sin(time * 0.005);
     });
 }
 
-
-function collectStar (player, star)
-{
-    star.disableBody(true, true);
-
-    score += 10;
-    scoreText.setText('Puntaje: ' + score);
-
-    if (stars.countActive(true) === 0)
-    {
-        // Guardar la puntuación más alta 
-        let highScore = localStorage.getItem('dinoCuboHighScore') || 0;
-        if (score > highScore) {
-            localStorage.setItem('dinoCuboHighScore', score);
-        }
-
-        currentLevelIndex++;
-
-        if (currentLevelIndex < LEVEL_DATA.length)
-        {
-            if (currentLevelIndex > 0) {
-               this.dropBomb(LEVEL_DATA[currentLevelIndex].baseBombVelocity);
-            }
-            loadLevel.call(this, currentLevelIndex);
-        }
-        else
-        {
-            // --- Juego Completado (Todos los niveles) ---
-            this.physics.pause();
-            player.anims.play('turn');
-            gameOver = true;
-            
-            gameOverText.setText('¡COMPLETADO!');
-            gameOverText.setFill('#00FF00');
-            gameOverText.setVisible(true);
-            
-            // Mostrar los tres botones
-            restartButton.setVisible(true).setText('Repetir Nivel 10'); 
-            startOverButton.setVisible(true);
-            menuButton.setVisible(true).setText('Selección de Nivel');
-        }
-    }
-}
-
-function hitBombNew (player, enemy)
-{
-    if (isInvulnerable) {
-        if (enemy.texture.key === 'bomb' || enemy.texture.key === 'drone') {
-            enemy.disableBody(true, true);
-        }
-        return; 
-    }
-
-    lives--;
-    livesText.setText('Vidas: ' + lives);
-
-    if (enemy.texture.key === 'bomb' || enemy.texture.key === 'drone') {
-        enemy.disableBody(true, true);
-    }
-
-    if (lives <= 0)
-    {
-        // --- Game Over ---
-        this.physics.pause();
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-        gameOver = true;
-        
-        let highScore = localStorage.getItem('dinoCuboHighScore') || 0;
-        if (score > highScore) {
-            localStorage.setItem('dinoCuboHighScore', score);
-        }
-
-        gameOverText.setText('GAME OVER');
-        gameOverText.setFill('#FFFF00');
-        
-        // Mostrar los tres botones
-        restartButton.setVisible(true).setText('Reintentar Nivel');
-        startOverButton.setVisible(true);
-        menuButton.setVisible(true).setText('Selección de Nivel');
-        gameOverText.setVisible(true);
-    }
-    else // Si pierde vida pero aún quedan
-    {
-        isInvulnerable = true;
-        player.setTint(0xff0000);
-
-        this.tweens.add({
-            targets: player, alpha: 0.2, ease: 'Power1', duration: 100, yoyo: true, repeat: 10, id: 'hit_flash'
-        });
-
-        this.time.delayedCall(2000, () => {
-            isInvulnerable = false;
-            player.clearTint();
-            player.setAlpha(1);
-        });
-    }
-}
-
-// --- FUNCIÓN: Reiniciar el nivel actual ---
-function restartCurrentLevel() {
-    lives = 3; 
-    score = 0; 
-    // currentLevelIndex se mantiene en el nivel donde estabas.
-    this.scene.restart();
-}
-
-// --- NUEVA FUNCIÓN: Empezar desde el Nivel 1 ---
-function startFromLevelOne() {
-    lives = 3;
-    score = 0;
-    currentLevelIndex = 0; // Reinicia el índice al nivel 1
-    this.scene.restart();
-}
+// ... (collectStar, hitBombNew, restartCurrentLevel, startFromLevelOne, collectFlower, collectShield, dropBomb, createMovingPlatform - sin cambios) ...
 
 
-// Las funciones collectFlower, collectShield, dropBomb, createMovingPlatform, loadLevel
-// permanecen iguales, pero se incluyen a continuación para el código completo.
-
-function collectFlower (player, flower)
-{
-    flower.disableBody(true, true);
-    lives++;
-    livesText.setText('Vidas: ' + lives);
-    score += 50;
-    scoreText.setText('Puntaje: ' + score);
-}
-
-function collectShield (player, shield)
-{
-    shield.disableBody(true, true);
-    score += 100;
-    scoreText.setText('Puntaje: ' + score);
-
-    if (isInvulnerable) {
-        if (shieldEffectTimer) {
-            shieldEffectTimer.remove(false);
-        }
-        player.clearTint();
-        player.setAlpha(1);
-    }
-    
-    isInvulnerable = true;
-    player.setTint(0x00ff00); 
-
-    this.tweens.add({
-        targets: player, alpha: 0.5, ease: 'Power1', duration: 250, yoyo: true, repeat: -1, id: 'shield_pulse'
-    });
-
-    shieldEffectTimer = this.time.delayedCall(5000, () => {
-        isInvulnerable = false;
-        player.clearTint();
-        player.setAlpha(1);
-        
-        this.tweens.getTweensOf(player).forEach(tween => {
-            if (tween.id === 'shield_pulse') {
-                tween.stop();
-            }
-        });
-        
-    }, [], this);
-}
-
-function dropBomb (baseVelocity) {
-    var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-    var bomb = bombs.create(x, 16, 'bomb');
-    bomb.setBounce(1);
-    bomb.setCollideWorldBounds(true);
-    bomb.setVelocity(Phaser.Math.Between(-200, 200), baseVelocity + Phaser.Math.Between(0, 50));
-    bomb.allowGravity = false;
-}
-
-function createMovingPlatform(x, y, scale, moveDistance, duration, context) {
-    const platform = movingPlatforms.create(x, y, 'ground').setScale(scale);
-    platform.setOrigin(0.5, 0.5); 
-
-    const startX = x - moveDistance;
-    const endX = x + moveDistance;
-
-    context.tweens.add({
-        targets: platform,
-        x: endX,
-        ease: 'Linear', 
-        duration: duration,
-        yoyo: true, 
-        repeat: -1, 
-    });
-}
-
-
+// --- FUNCIÓN CLAVE MODIFICADA: loadLevel ---
 function loadLevel (levelIndex)
 {
+    // Limpieza de todos los grupos al iniciar nivel
     platforms.clear(true, true);
     movingPlatforms.clear(true, true); 
     stars.clear(true, true);
     bombs.clear(true, true);
     drones.clear(true, true);
-    extraLives.clear(true, true);
-    shields.clear(true, true); 
+    extraLives.clear(true, true); // Limpiar las flores estáticas
+    shields.clear(true, true);    // Limpiar los escudos estáticos
 
-    if (shieldEffectTimer) {
-        shieldEffectTimer.remove(false);
-        shieldEffectTimer = null;
-    }
+    // Reinicio de invulnerabilidad
+    if (shieldEffectTimer) { shieldEffectTimer.remove(false); shieldEffectTimer = null; }
     isInvulnerable = false;
     player.clearTint();
     player.setAlpha(1);
     this.tweens.getTweensOf(player).forEach(tween => {
-        if (tween.id === 'shield_pulse') {
-            tween.stop();
-        }
+        if (tween.id === 'shield_pulse') { tween.stop(); }
     });
 
-    if (levelIndex >= LEVEL_DATA.length) {
-        levelIndex = LEVEL_DATA.length - 1;
-    }
+    if (levelIndex >= LEVEL_DATA.length) { levelIndex = LEVEL_DATA.length - 1; }
 
     const level = LEVEL_DATA[levelIndex];
     levelText.setText(level.name);
 
+    // 1. Creación de Plataformas (Igual)
     const platformsToMove = (levelIndex >= 2) ? Math.floor((level.platformPositions.length - 1) / 2) : 0;
     const allPlatforms = level.platformPositions;
     let platformsMoved = 0;
     
+    // Lista para almacenar las coordenadas y poder colocar los power-ups encima.
+    const platformCoordinates = []; 
+
     if (allPlatforms.length > 0) {
-        platforms.create(allPlatforms[0].x, allPlatforms[0].y, 'ground').setScale(allPlatforms[0].scale).refreshBody();
+        const p = platforms.create(allPlatforms[0].x, allPlatforms[0].y, 'ground').setScale(allPlatforms[0].scale).refreshBody();
+        platformCoordinates.push({ x: allPlatforms[0].x, y: allPlatforms[0].y - 50 }); // Coloca 50px sobre el centro Y de la plataforma
     }
 
     for (let i = 1; i < allPlatforms.length; i++) {
         const pos = allPlatforms[i];
         
         if (levelIndex >= 2 && platformsMoved < platformsToMove) {
+            // No podemos poner items fijos sobre plataformas móviles fácilmente, lo saltamos.
             createMovingPlatform(pos.x, pos.y, pos.scale, 150, 3000, this); 
             platformsMoved++;
         } else {
-            platforms.create(pos.x, pos.y, 'ground').setScale(pos.scale).refreshBody();
+            const p = platforms.create(pos.x, pos.y, 'ground').setScale(pos.scale).refreshBody();
+            platformCoordinates.push({ x: pos.x, y: pos.y - 50 }); // Coloca 50px sobre el centro Y de la plataforma
         }
     }
 
 
+    // 2. Creación de Ítems (Estrellas y Enemigos - Igual)
+
+    // Estrellas (siguen cayendo/rebotando)
     for (let i = 0; i < level.starCount; i++) {
         let x = Phaser.Math.Between(50, 750);
         let y = Phaser.Math.Between(0, 200);
@@ -658,15 +388,12 @@ function loadLevel (levelIndex)
         star.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     }
 
-    for (let i = 0; i < level.initialBombCount; i++) {
-        this.dropBomb(level.baseBombVelocity);
-    }
-
+    // Bombas y Drones (Igual)
+    for (let i = 0; i < level.initialBombCount; i++) { this.dropBomb(level.baseBombVelocity); }
     if (level.droneCount > 0) {
         for (let i = 0; i < level.droneCount; i++) {
             let x = Phaser.Math.Between(50, 750);
             let y = Phaser.Math.Between(100, 250);
-
             let drone = drones.create(x, y, 'drone').setScale(0.1);
             drone.body.setAllowGravity(false);
             drone.setCollideWorldBounds(true);
@@ -675,32 +402,53 @@ function loadLevel (levelIndex)
         }
     }
 
-    if (level.flowerCount > 0) {
-        for (let i = 0; i < level.flowerCount; i++) {
-            let x = Phaser.Math.Between(50, 750);
-            let y = Phaser.Math.Between(100, 300);
+    // 3. Creación de Flores y Escudos (NUEVA LÓGICA ESTÁTICA)
 
-            let flower = extraLives.create(x, y, 'flower');
+    // Solo colocamos si tenemos suficientes plataformas disponibles
+    if (platformCoordinates.length > 0) {
+        // Shuffle las coordenadas disponibles para una distribución aleatoria entre plataformas
+        Phaser.Utils.Array.Shuffle(platformCoordinates);
+        let coordIndex = 0;
+
+        // Flores (Extra Lives)
+        for (let i = 0; i < level.flowerCount && coordIndex < platformCoordinates.length; i++) {
+            const pos = platformCoordinates[coordIndex];
+            
+            // Creamos el sprite de forma estática (el grupo ya es estático)
+            let flower = extraLives.create(pos.x, pos.y, 'flower');
             flower.setScale(1); 
-            flower.setBounceY(Phaser.Math.FloatBetween(0.5, 0.7));
+            // Ya no es necesario setBounceY ni setAllowGravity(false) ya que es estático.
+            coordIndex++;
         }
-    }
 
-    if (level.shieldCount > 0) {
-        for (let i = 0; i < level.shieldCount; i++) {
-            let x = Phaser.Math.Between(50, 750);
-            let y = Phaser.Math.Between(100, 350);
-
-            let shield = shields.create(x, y, 'es');
+        // Escudos
+        for (let i = 0; i < level.shieldCount && coordIndex < platformCoordinates.length; i++) {
+            const pos = platformCoordinates[coordIndex];
+            
+            // Creamos el sprite de forma estática
+            let shield = shields.create(pos.x, pos.y, 'es');
             shield.setScale(1.6); 
-            shield.setBounceY(Phaser.Math.FloatBetween(0.4, 0.6));
+            coordIndex++;
         }
     }
+    // Si no hay plataformas, las flores/escudos no se crean.
 
     player.setPosition(100, 400);
     player.setVelocity(0);
     jumpCount = 0;
 }
+
+
+// FUNCIONES ADICIONALES (Se mantienen, pero se incluyen para el código completo)
+function collectStar (player, star) { star.disableBody(true, true); score += 10; scoreText.setText('Puntaje: ' + score); if (stars.countActive(true) === 0) { let highScore = localStorage.getItem('dinoCuboHighScore') || 0; if (score > highScore) { localStorage.setItem('dinoCuboHighScore', score); } currentLevelIndex++; if (currentLevelIndex < LEVEL_DATA.length) { if (currentLevelIndex > 0) { this.dropBomb(LEVEL_DATA[currentLevelIndex].baseBombVelocity); } loadLevel.call(this, currentLevelIndex); } else { this.physics.pause(); player.anims.play('turn'); gameOver = true; gameOverText.setText('¡COMPLETADO!').setFill('#00FF00').setVisible(true); restartButton.setVisible(true).setText('Repetir Nivel 10'); startOverButton.setVisible(true); menuButton.setVisible(true).setText('Selección de Nivel'); } } }
+function hitBombNew (player, enemy) { if (isInvulnerable) { if (enemy.texture.key === 'bomb' || enemy.texture.key === 'drone') { enemy.disableBody(true, true); } return; } lives--; livesText.setText('Vidas: ' + lives); if (enemy.texture.key === 'bomb' || enemy.texture.key === 'drone') { enemy.disableBody(true, true); } if (lives <= 0) { this.physics.pause(); player.setTint(0xff0000); player.anims.play('turn'); gameOver = true; let highScore = localStorage.getItem('dinoCuboHighScore') || 0; if (score > highScore) { localStorage.setItem('dinoCuboHighScore', score); } gameOverText.setText('GAME OVER').setFill('#FFFF00').setVisible(true); restartButton.setVisible(true).setText('Reintentar Nivel'); startOverButton.setVisible(true); menuButton.setVisible(true).setText('Selección de Nivel'); } else { isInvulnerable = true; player.setTint(0xff0000); this.tweens.add({ targets: player, alpha: 0.2, ease: 'Power1', duration: 100, yoyo: true, repeat: 10, id: 'hit_flash' }); this.time.delayedCall(2000, () => { isInvulnerable = false; player.clearTint(); player.setAlpha(1); }); } }
+function restartCurrentLevel() { lives = 3; score = 0; this.scene.restart(); }
+function startFromLevelOne() { lives = 3; score = 0; currentLevelIndex = 0; this.scene.restart(); }
+function collectFlower (player, flower) { flower.disableBody(true, true); lives++; livesText.setText('Vidas: ' + lives); score += 50; scoreText.setText('Puntaje: ' + score); }
+function collectShield (player, shield) { shield.disableBody(true, true); score += 100; scoreText.setText('Puntaje: ' + score); if (isInvulnerable) { if (shieldEffectTimer) { shieldEffectTimer.remove(false); } player.clearTint(); player.setAlpha(1); } isInvulnerable = true; player.setTint(0x00ff00); this.tweens.add({ targets: player, alpha: 0.5, ease: 'Power1', duration: 250, yoyo: true, repeat: -1, id: 'shield_pulse' }); shieldEffectTimer = this.time.delayedCall(5000, () => { isInvulnerable = false; player.clearTint(); player.setAlpha(1); this.tweens.getTweensOf(player).forEach(tween => { if (tween.id === 'shield_pulse') { tween.stop(); } }); }, [], this); }
+function dropBomb (baseVelocity) { var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400); var bomb = bombs.create(x, 16, 'bomb'); bomb.setBounce(1); bomb.setCollideWorldBounds(true); bomb.setVelocity(Phaser.Math.Between(-200, 200), baseVelocity + Phaser.Math.Between(0, 50)); bomb.allowGravity = false; }
+function createMovingPlatform(x, y, scale, moveDistance, duration, context) { const platform = movingPlatforms.create(x, y, 'ground').setScale(scale); platform.setOrigin(0.5, 0.5); const startX = x - moveDistance; const endX = x + moveDistance; context.tweens.add({ targets: platform, x: endX, ease: 'Linear', duration: duration, yoyo: true, repeat: -1, }); }
+
 </script>
 
 </body>
